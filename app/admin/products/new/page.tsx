@@ -22,9 +22,6 @@ const safeJson = async (res: Response) => {
 type Cat = { id: number; name: string };
 
 export default function NewProductoPage() {
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [okMsg, setOkMsg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   function normalizeNumber(v:any){
     if (typeof v === 'number') return v;
     if (!v) return 0;
@@ -50,18 +47,7 @@ export default function NewProductoPage() {
     (async () => {
       try {
         const res = await fetch('/api/categories');
-              const _clone = res.clone();
-      const _text = await _clone.text();
-      let _json:any = undefined; try { _json = JSON.parse(_text); } catch {}
-      if (!res.ok) {
-        setErrorMsg((_json && (_json.error || _json.message)) || _text || `Error ${res.status}`);
-        setOkMsg(null);
-        return;
-      } else {
-        setErrorMsg(null);
-        setOkMsg('Producto creado correctamente.');
-      }
-const json = await safeJson(res);
+        const json = await safeJson(res);
         if (Array.isArray(json)) setCats(json);
       } catch {}
     })();
@@ -144,5 +130,4 @@ const json = await safeJson(res);
       </form>
     </div>
   );
-  setLoading(false);
 }

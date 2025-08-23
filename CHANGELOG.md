@@ -16,7 +16,7 @@
 ### Fix
 - Se eliminaron propiedades **duplicadas** en el payload del formulario (`price`, `cost`, `stock`) que causaban el error: *An object literal cannot have multiple properties with the same name* durante el build de TypeScript.
 
-## DEBUG v10 (2025-08-23)
-### Mejora de diagnóstico
-- Formulario ahora muestra el **mensaje exacto** del servidor cuando falla el POST `/api/products`.
-- Indicadores de `loading`, `okMsg` y `errorMsg` en UI.
+## v11 (2025-08-23)
+### UX Crear producto
+- Manejador **handleSubmit** robusto: normaliza números, envía JSON con `Content-Type`, muestra error real y **redirige** a `/admin/products` en éxito.
+- Limpieza de duplicados `price/cost/stock` en el payload.
