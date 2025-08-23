@@ -20,3 +20,8 @@
 ### UX Crear producto
 - Manejador **handleSubmit** robusto: normaliza números, envía JSON con `Content-Type`, muestra error real y **redirige** a `/admin/products` en éxito.
 - Limpieza de duplicados `price/cost/stock` en el payload.
+
+## v12 (2025-08-23)
+### Listado de productos
+- **Fetch robusto** en `app/admin/products/page.tsx` usando `headers()` para construir una URL absoluta en SSR.
+- `cache: 'no-store'` para evitar resultados vacíos por caché.

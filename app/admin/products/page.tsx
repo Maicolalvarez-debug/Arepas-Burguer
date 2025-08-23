@@ -1,3 +1,4 @@
+import { headers } from 'next/headers'
 import React from 'react'
 import Link from 'next/link'
 
@@ -13,16 +14,22 @@ type Product = {
 
 async function getProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ''}/api/products`, {
-      cache: 'no-store',
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    const list = Array.isArray(data?.products) ? data.products : (Array.isArray(data) ? data : [])
-    return list as Product[]
+    const hdrs = headers();
+    const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || '';
+    const protocol = (hdrs.get('x-forwarded-proto') || 'https');
+    const base = process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.trim().length > 0
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : (host ? `${protocol}://${host}` : '');
+
+    const url = base ? `${base}/api/products` : `/api/products`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
   } catch {
-    return []
+    return [];
   }
+}
 }
 
 function formatCurrency(v?: number) {
