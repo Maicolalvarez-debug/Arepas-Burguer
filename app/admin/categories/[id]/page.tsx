@@ -43,7 +43,7 @@ export default function EditCategoríaPage({ params }: { params: { id: string } 
       });
       const json = await safeJson(res);
       if (!res.ok || !json?.ok) throw new Error(json?.error || 'No se pudo actualizar');
-      router.push('/admin/categories');
+      router.replace('/admin/categories');
     } catch (err: any) {
       setMsg(err?.message || 'Error');
     } finally {

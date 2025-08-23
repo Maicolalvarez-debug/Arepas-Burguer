@@ -19,7 +19,7 @@ export default function NewCategoriaPage() {
       const res = await fetch('/api/categories', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name }) })
       const json = await safeJson(res)
       if (!res.ok || !json?.ok) throw new Error(json?.error || 'No se pudo crear')
-      router.push('/admin/categories')
+      router.replace('/admin/categories')
     } catch (err:any) {
       setMsg(err?.message || 'Error')
     } finally {
