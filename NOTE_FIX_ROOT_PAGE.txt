@@ -1,5 +1,0 @@
-Se eliminó el archivo raíz 'page.tsx' para evitar conflictos con el App Router.
-Si necesitas una página de inicio, usa 'app/page.tsx'.
-
-Archivo(s) removido(s):
-- page.tsx
