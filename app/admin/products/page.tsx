@@ -29,7 +29,6 @@ async function getProducts(): Promise<Product[]> {
     return [];
   }
 }
-}
 
 function formatCurrency(v?: number) {
   if (typeof v !== 'number') return '-'

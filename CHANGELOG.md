@@ -29,3 +29,7 @@
 ## v13 (2025-08-23)
 ### Fix build
 - Se eliminó una llave `}` extra después de `getProducts()` en `app/admin/products/page.tsx` que causaba el error *Expression expected* en el build.
+
+## v14 (2025-08-23)
+### Fix build (products list)
+- Cerrado correctamente `type Product` y eliminado `}` duplicado en `app/admin/products/page.tsx`.
