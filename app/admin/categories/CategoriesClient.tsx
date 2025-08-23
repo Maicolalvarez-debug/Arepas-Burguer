@@ -18,7 +18,7 @@ export default function CategoriesClient({ data }: { data: Item[] }) {
   async function remove(id: number) {
     if (!confirm('¿Eliminar definitivamente?')) return
     try {
-      setBusy(True)
+      setBusy(true)
       setMsg('')
       const res = await fetch('/api/categories/' + id, { method: 'DELETE' })
       const json = await res.json()
