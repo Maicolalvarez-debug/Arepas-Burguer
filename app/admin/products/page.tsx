@@ -1,107 +1,88 @@
-'use client'
-import useSWR from 'swr'
-import { useMemo, useState } from 'react'
+import React from 'react'
+import Link from 'next/link'
+import HeaderCreateButton from './HeaderCreateButton'
 
-const fetcher = (u:string)=>fetch(u, { cache:'no-store' }).then(r=>r.json())
-const pesos = (n:number)=>'$'+(n||0).toLocaleString('es-CO')
+export const dynamic = 'force-dynamic'
 
-type Status = 'active'|'archived'|'all'
+type Product = {
+  id: number | string
+  name: string
+  price?: number
+  category?: { name?: string } | null
+  isActive?: boolean
+}
 
-export default function AdminProducts() {
-  const [status, setStatus] = useState<Status>('all')
-  const [q, setQ] = useState('')
-
-  const url = useMemo(()=>{
-    const p = new URLSearchParams()
-    p.set('status', status)
-    if (q.trim()) p.set('q', q.trim())
-    return `/api/products?${p.toString()}`
-  }, [status, q])
-
-  const { data, isLoading, mutate } = useSWR(url, fetcher)
-
-  async function archive(id:number){
-    if (!confirm('¿Archivar este producto?')) return
-    const res = await fetch(`/api/products/${id}`, { method:'DELETE' })
-    if (!res.ok) alert('No se pudo archivar')
-    mutate()
+async function getProducts(): Promise<Product[]> {
+  try {
+    // Intento hacer fetch al API interno. Si no existe /api/products, se regresará un arreglo vacío.
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ''}/api/products`, {
+      cache: 'no-store',
+    })
+    if (!res.ok) return []
+    const data = await res.json()
+    // Normalización defensiva: admite data.products o data directamente como lista
+    const list = Array.isArray(data?.products) ? data.products : (Array.isArray(data) ? data : [])
+    return list as Product[]
+  } catch {
+    return []
   }
-  async function restore(id:number){
-    const res = await fetch(`/api/products/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ isActive: true }) })
-    if (!res.ok) alert('No se pudo restaurar')
-    mutate()
+}
+
+function formatCurrency(v?: number) {
+  if (typeof v !== 'number') return '-'
+  try {
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v)
+  } catch {
+    return String(v)
   }
-  async function quickEditPrice(id:number, current:number){
-    const str = prompt('Nuevo precio', String(current||0))
-    if (str===null) return
-    const price = Number(str)||0
-    const res = await fetch(`/api/products/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ price }) })
-    if (!res.ok) alert('No se pudo actualizar precio')
-    mutate()
-  }
-  async function quickEditCost(id:number, current:number){
-    const str = prompt('Nuevo costo', String(current||0))
-    if (str===null) return
-    const cost = Number(str)||0
-    const res = await fetch(`/api/products/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ cost }) })
-    if (!res.ok) alert('No se pudo actualizar costo')
-    mutate()
-  }
+}
+
+export default async function ProductsPage() {
+  const products = await getProducts()
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-semibold">Productos</h1>
+      <HeaderCreateButton />
 
-      <div className="flex gap-2 items-center">
-        <button onClick={()=>setStatus('active')} className={`px-3 py-1 rounded border ${status==='active'?'bg-black text-white':''}`}>Activos</button>
-        <button onClick={()=>setStatus('archived')} className={`px-3 py-1 rounded border ${status==='archived'?'bg-black text-white':''}`}>Archivados</button>
-        <button onClick={()=>setStatus('all')} className={`px-3 py-1 rounded border ${status==='all'?'bg-black text-white':''}`}>Todos</button>
-        <input className="ml-4 border rounded px-3 py-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400" placeholder="Buscar..." value={q} onChange={e=>setQ(e.target.value)} />
-      </div>
-
-      {isLoading && <div>Cargando…</div>}
-      {!isLoading && (
-        <div className="overflow-auto">
-          <table className="min-w-[800px] w-full border border-gray-700 text-white">
-            <thead>
-              <tr className="bg-gray-900">
-                <th className="text-left p-2 border border-gray-700">ID</th>
-                <th className="text-left p-2 border border-gray-700">Nombre</th>
-                <th className="text-left p-2 border border-gray-700">Categoría</th>
-                <th className="text-right p-2 border border-gray-700">Precio</th>
-                <th className="text-right p-2 border border-gray-700">Costo</th>
-                <th className="text-center p-2 border border-gray-700">Estado</th>
-                <th className="text-center p-2 border border-gray-700">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data||[]).map((p:any)=>(
-                <tr key={p.id} className="border-t border-gray-700">
-                  <td className="p-2 border border-gray-700">{p.id}</td>
-                  <td className="p-2 border border-gray-700">{p.name}</td>
-                  <td className="p-2 border border-gray-700">{p.category?.name ?? p.categoryId}</td>
-                  <td className="p-2 border border-gray-700 text-right">{pesos(p.price)}</td>
-                  <td className="p-2 border border-gray-700 text-right">{pesos(p.cost)}</td>
-                  <td className="p-2 border border-gray-700 text-center">{p.isActive ? 'Activo' : 'Archivado'}</td>
-                  <td className="p-2 border border-gray-700 text-center">
-                    <div className="flex gap-2 justify-center">
-                      <button className="border rounded px-2 py-1" onClick={()=>quickEditPrice(p.id, p.price)}>Precio</button>
-                      <button className="border rounded px-2 py-1" onClick={()=>quickEditCost(p.id, p.cost)}>Costo</button>
-                      {p.isActive
-                        ? <button className="border rounded px-2 py-1" onClick={()=>archive(p.id)}>Archivar</button>
-                        : <button className="border rounded px-2 py-1 bg-black text-white" onClick={()=>restore(p.id)}>Restaurar</button>
-                      }
-                    </div>
+      <div className="rounded-lg border border-white/10 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-black/40">
+            <tr>
+              <th className="text-left px-3 py-2">Nombre</th>
+              <th className="text-left px-3 py-2">Categoría</th>
+              <th className="text-left px-3 py-2">Precio</th>
+              <th className="text-left px-3 py-2">Estado</th>
+              <th className="text-left px-3 py-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.length ? (
+              products.map((p) => (
+                <tr key={String(p.id)} className="border-t border-white/10">
+                  <td className="px-3 py-2">{p.name}</td>
+                  <td className="px-3 py-2">{p?.category?.name ?? '-'}</td>
+                  <td className="px-3 py-2">{formatCurrency(p.price)}</td>
+                  <td className="px-3 py-2">{p?.isActive === false ? 'Inactivo' : 'Activo'}</td>
+                  <td className="px-3 py-2">
+                    <Link
+                      href={`/admin/products/${p.id}`}
+                      className="border rounded px-2 py-1 hover:bg-white/10 transition"
+                    >
+                      Editar
+                    </Link>
                   </td>
                 </tr>
-              ))}
-              {!(data||[]).length && (
-                <tr><td className="p-3 text-center opacity-60" colSpan={7}>Sin resultados.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+              ))
+            ) : (
+              <tr>
+                <td className="px-3 py-6 text-center opacity-70" colSpan={5}>
+                  No hay productos para mostrar.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
