@@ -99,7 +99,7 @@ export default function NewProductoPage() {
           </div>
           <div>
             <label className="block text-sm mb-1">Stock</label>
-            <input type="number" value={stock} onChange={e=>setStock(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
+            <input type="number" value={stock ?? ""} onChange={(e)=>{ const raw = e.target.value.replace(/\D+/g,""); setStock(raw); }} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
           </div>
           <div className="flex items-center gap-2 mt-7">
             <input id="active" type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)} />
