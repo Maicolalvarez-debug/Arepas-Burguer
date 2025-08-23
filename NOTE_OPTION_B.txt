@@ -1,0 +1,5 @@
+Opción B aplicada:
+- Eliminados imports/usos de HeaderCreateButton en:
+
+Advertencia: aún hay menciones a 'HeaderCreateButton' en:
+  - app/admin/products/HeaderCreateButton.tsx
