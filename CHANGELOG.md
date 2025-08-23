@@ -25,3 +25,7 @@
 ### Listado de productos
 - **Fetch robusto** en `app/admin/products/page.tsx` usando `headers()` para construir una URL absoluta en SSR.
 - `cache: 'no-store'` para evitar resultados vacíos por caché.
+
+## v13 (2025-08-23)
+### Fix build
+- Se eliminó una llave `}` extra después de `getProducts()` en `app/admin/products/page.tsx` que causaba el error *Expression expected* en el build.

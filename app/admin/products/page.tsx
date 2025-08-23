@@ -10,7 +10,6 @@ type Product = {
   price?: number
   category?: { name?: string } | null
   isActive?: boolean
-}
 
 async function getProducts(): Promise<Product[]> {
   try {
