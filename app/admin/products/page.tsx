@@ -8,8 +8,11 @@ type Product = {
   id: number | string
   name: string
   price?: number
+  cost?: number
+  stock?: number
   category?: { name?: string } | null
   isActive?: boolean
+}
 
 async function getProducts(): Promise<Product[]> {
   try {

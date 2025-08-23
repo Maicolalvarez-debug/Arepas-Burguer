@@ -33,3 +33,7 @@
 ## v14 (2025-08-23)
 ### Fix build (products list)
 - Cerrado correctamente `type Product` y eliminado `}` duplicado en `app/admin/products/page.tsx`.
+
+## v15 (2025-08-23)
+### Fix build definitivo (listado)
+- Se reescribió el bloque `type Product` correctamente cerrado y con campos `cost` y `stock`.
