@@ -22,9 +22,6 @@ const safeJson = async (res: Response) => {
 type Cat = { id: number; name: string };
 
 export default function NewProductoPage() {
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [okMsg, setOkMsg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   function normalizeNumber(v:any){
     if (typeof v === 'number') return v;
     if (!v) return 0;
@@ -74,7 +71,7 @@ export default function NewProductoPage() {
         }),
       });
       const json = await safeJson(res);
-      if (!res.ok || !json?.ok) throw new Error(json?.error || '{errorMsg ? errorMsg : ''}');
+      if (!res.ok || !json?.ok) throw new Error(json?.error || 'No se pudo crear');
       router.push('/admin/products');
     } catch (err: any) {
       setMsg(err?.message || 'Error');
@@ -130,18 +127,7 @@ export default function NewProductoPage() {
           {busy ? 'Guardando…' : 'Crear'}
         </button>
         {msg && <div className="text-sm">{msg}</div>}
-      
-      {errorMsg && (
-        <p className="mt-3 text-sm text-red-400 bg-red-950/40 border border-red-800 rounded p-2 whitespace-pre-wrap">{errorMsg}</p>
-      )}
-      {okMsg && (
-        <p className="mt-3 text-sm text-emerald-400 bg-emerald-950/40 border border-emerald-800 rounded p-2">{okMsg}</p>
-      )}
-      <button type="submit" className="mt-4 border px-4 py-2 rounded disabled:opacity-60" disabled={loading}>
-        {loading ? 'Creando…' : 'Crear'}
-      </button>
-
-    </form>
+      </form>
     </div>
   );
 }

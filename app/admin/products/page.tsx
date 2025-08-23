@@ -1,8 +1,5 @@
+import ProductsTable from './ProductsTable'
 import { headers } from 'next/headers'
-import React from 'react'
-import Link from 'next/link'
-
-export const dynamic = 'force-dynamic'
 
 type Product = {
   id: number | string
@@ -14,61 +11,49 @@ type Product = {
   isActive?: boolean
 }
 
+type Category = { id: number | string; name: string }
+
+function getBaseUrl() {
+  const hdrs = headers()
+  const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || ''
+  const proto = hdrs.get('x-forwarded-proto') || 'https'
+  return host ? `${proto}://${host}` : ''
+}
+
 async function getProducts(): Promise<Product[]> {
   try {
-    const hdrs = headers();
-    const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || '';
-    const protocol = (hdrs.get('x-forwarded-proto') || 'https');
-    const base = process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.trim().length > 0
-      ? process.env.NEXT_PUBLIC_BASE_URL
-      : (host ? `${protocol}://${host}` : '');
-
-    const url = base ? `${base}/api/products` : `/api/products`;
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
-  } catch {
-    return [];
-  }
+    const base = process.env.NEXT_PUBLIC_BASE_URL?.trim() || getBaseUrl()
+    const url = base ? `${base}/api/products` : `/api/products`
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : [])
+  } catch { return [] }
 }
 
-function formatCurrency(v?: number) {
-  if (typeof v !== 'number') return '-'
+async function getCategories(): Promise<Category[]> {
   try {
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v)
-  } catch {
-    return String(v)
-  }
+    const base = process.env.NEXT_PUBLIC_BASE_URL?.trim() || getBaseUrl()
+    const url = base ? `${base}/api/categories` : `/api/categories`
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : [])
+  } catch { return [] }
 }
-
-async function getCategories(): Promise<{id:number|string, name:string}[]>{
-  try {
-    const hdrs = headers();
-    const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || '';
-    const protocol = (hdrs.get('x-forwarded-proto') || 'https');
-    const base = process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.trim().length > 0
-      ? process.env.NEXT_PUBLIC_BASE_URL
-      : (host ? `${protocol}://${host}` : '');
-    const url = base ? `${base}/api/categories` : `/api/categories`;
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
-  } catch { return []; }
-}
-
-import ProductsTable from './ProductsTable'
 
 export default async function ProductsPage() {
-  const products = await getProducts();
-  const categories = await getCategories();
+  const [products, categories] = await Promise.all([getProducts(), getCategories()])
+
   return (
-    <div className="p-4 space-y-4">
-      {/* Header inline (sin import) */}
-      <div className="rounded-lg border border-white/10 overflow-hidden">
-        <ProductsTable products={products} categories={categories} />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Productos</h1>
+        <a href="/admin/products/new" className="border rounded px-3 py-1 hover:bg-white/10 transition">
+          Crear producto
+        </a>
       </div>
+      <ProductsTable products={products} categories={categories} />
     </div>
   )
 }

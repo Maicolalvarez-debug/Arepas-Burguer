@@ -38,9 +38,10 @@
 ### Fix build definitivo (listado)
 - Se reescribió el bloque `type Product` correctamente cerrado y con campos `cost` y `stock`.
 
-## v16 (2025-08-23)
+## v17 (2025-08-23)
 ### Crear producto
-- Mensaje "No se pudo crear" ahora es **condicional** y en éxito se muestra confirmación y se **redirige** a /admin/products.
+- Se corrigió el `throw` mal formateado y se eliminó el texto duro "No se pudo crear".
 
-### Listado
-- Nuevo componente **ProductsTable** (cliente) con filtros por **nombre** y **categoría** y contador de resultados.
+### Listado de productos
+- Nuevo componente cliente `ProductsTable` con filtros por **nombre** y **categoría**.
+- Página SSR usa `headers()` para URL absoluta y `{cache: 'no-store'}`.
