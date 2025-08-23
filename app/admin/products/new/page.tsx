@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const safeJson = async (res: Response) => {
-  try { return await safeJson(res); } catch { return null }
+  try { return await res.json(); } catch { return null }
 };
 
 type Cat = { id: number; name: string };
