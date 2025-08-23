@@ -31,3 +31,37 @@ export async function GET(req: NextRequest) {
   }
   return NextResponse.json(products, { headers: { 'Cache-Control': 'no-store' } })
 }
+
+
+export async function POST(req: NextRequest) {
+  try {
+    const data = await req.json().catch(() => ({}))
+    const name = (data?.name ?? '').toString().trim()
+    if (!name) {
+      return NextResponse.json({ ok:false, error:'name_required' }, { status: 400 })
+    }
+    const price = Number(data?.price ?? 0)
+    const cost  = Number(data?.cost ?? 0)
+    const stock = Number(data?.stock ?? 0)
+    const categoryId = data?.categoryId ? Number(data.categoryId) : null
+    const isActive = data?.isActive === false ? false : true
+    const description = data?.description ? String(data.description) : null
+    const image = data?.image ? String(data.image) : null
+
+    const created = await prisma.product.create({
+      data: {
+        name,
+        price,
+        cost,
+        stock,
+        isActive,
+        categoryId,
+        description,
+        image,
+      },
+    })
+    return NextResponse.json(created, { status: 201 })
+  } catch (e:any) {
+    return NextResponse.json({ ok:false, error: e?.message || 'create_failed' }, { status: 500 })
+  }
+}

@@ -4,6 +4,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const safeJson = async (res: Response) => {
+  try { return await safeJson(res); } catch { return null }
+};
+
 type Cat = { id: number; name: string };
 
 export default function NewProductoPage() {
@@ -24,7 +28,7 @@ export default function NewProductoPage() {
     (async () => {
       try {
         const res = await fetch('/api/categories');
-        const json = await res.json();
+        const json = await safeJson(res);
         if (Array.isArray(json)) setCats(json);
       } catch {}
     })();
@@ -48,7 +52,7 @@ export default function NewProductoPage() {
           image,
         }),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json?.ok) throw new Error(json?.error || 'No se pudo crear');
       router.push('/admin/products');
     } catch (err: any) {
@@ -65,26 +69,26 @@ export default function NewProductoPage() {
         <div className="grid md:grid-cols-2 gap-3">
           <div>
             <label className="block text-sm mb-1">Nombre</label>
-            <input value={name} onChange={e=>setName(e.target.value)} className="w-full border rounded-lg px-3 py-2" required />
+            <input value={name} onChange={e=>setName(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" required />
           </div>
           <div>
             <label className="block text-sm mb-1">Categoría</label>
-            <select value={categoryId} onChange={e=>setCategoryId(e.target.value === '' ? '' : Number(e.target.value))} className="w-full border rounded-lg px-3 py-2">
+            <select value={categoryId} onChange={e=>setCategoryId(e.target.value === '' ? '' : Number(e.target.value))} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400">
               <option value="">(Sin categoría)</option>
               {cats.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm mb-1">Precio</label>
-            <input type="number" step="0.01" value={price} onChange={e=>setPrice(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+            <input type="number" step="0.01" value={price} onChange={e=>setPrice(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
           </div>
           <div>
             <label className="block text-sm mb-1">Costo</label>
-            <input type="number" step="0.01" value={cost} onChange={e=>setCost(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+            <input type="number" step="0.01" value={cost} onChange={e=>setCost(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
           </div>
           <div>
             <label className="block text-sm mb-1">Stock</label>
-            <input type="number" value={stock} onChange={e=>setStock(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+            <input type="number" value={stock} onChange={e=>setStock(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
           </div>
           <div className="flex items-center gap-2 mt-7">
             <input id="active" type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)} />
@@ -98,7 +102,7 @@ export default function NewProductoPage() {
         </div>
         <div>
           <label className="block text-sm mb-1">Imagen (URL)</label>
-          <input value={image} onChange={e=>setImage(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+          <input value={image} onChange={e=>setImage(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
         </div>
 
         <button disabled={busy} className="rounded-xl px-4 py-2 border">
