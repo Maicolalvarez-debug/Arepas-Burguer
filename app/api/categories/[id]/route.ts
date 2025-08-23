@@ -2,6 +2,17 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+  const id = Number(params.id)
+  try {
+    const item = await prisma.category.findUnique({ where: { id } })
+    if (!item) return NextResponse.json({ ok: false, error: 'not_found' }, { status: 404 })
+    return NextResponse.json(item)
+  } catch (e:any) {
+    return NextResponse.json({ ok: false, error: e?.message || 'get_failed' }, { status: 500 })
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const id = Number(params.id)
   try {

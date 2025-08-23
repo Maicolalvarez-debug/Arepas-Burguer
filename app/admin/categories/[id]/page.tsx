@@ -2,7 +2,10 @@
 // app/admin/categories/[id]/page.tsx
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'
+
+async function safeJson(res: Response) { try { return await res.json() } catch { return null } }
+;
 
 export default function EditCategoríaPage({ params }: { params: { id: string } }) {
   const router = useRouter();
