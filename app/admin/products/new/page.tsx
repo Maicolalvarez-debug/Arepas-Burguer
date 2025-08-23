@@ -4,6 +4,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+function formatMiles(v: string | number) {
+  const n = typeof v === 'number' ? v : Number(String(v).replace(/[\.,]/g,''));
+  if (!Number.isFinite(n)) return '';
+  return n.toLocaleString('es-CO');
+}
+function parseMilesToNumber(v: string | number) {
+  if (typeof v === 'number') return v;
+  const raw = String(v).replace(/[\.,\s]/g, '');
+  return Number(raw || 0);
+}
+
 const safeJson = async (res: Response) => {
   try { return await res.json(); } catch { return null }
 };
@@ -13,9 +24,9 @@ type Cat = { id: number; name: string };
 export default function NewProductoPage() {
   const router = useRouter();
   const [name, setName] = useState('');
-  const [price, setPrice] = useState<number | string>(0);
-  const [cost, setCost]   = useState<number | string>(0);
-  const [stock, setStock] = useState<number | string>(0);
+  const [price: parseMilesToNumber(price), setPrice] = useState<number | string>(0);
+  const [cost: parseMilesToNumber(cost), setCost]   = useState<number | string>(0);
+  const [stock: Number(stock), setStock] = useState<number | string>(0);
   const [active, setActive] = useState(true);
   const [categoryId, setCategoryId] = useState<number | ''>('');
   const [description, setDescription] = useState('');
@@ -80,11 +91,11 @@ export default function NewProductoPage() {
           </div>
           <div>
             <label className="block text-sm mb-1">Precio</label>
-            <input type="number" step="0.01" value={price} onChange={e=>setPrice(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
+            <input type="number" step="0.01" value={typeof price==="number" ? formatMiles(price) : price} onChange={(e)=>{ const val = parseMilesToNumber(e.target.value); setPrice(formatMiles(val)); }} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
           </div>
           <div>
             <label className="block text-sm mb-1">Costo</label>
-            <input type="number" step="0.01" value={cost} onChange={e=>setCost(e.target.value)} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
+            <input type="number" step="0.01" value={typeof cost==="number" ? formatMiles(cost) : cost} onChange={(e)=>{ const val = parseMilesToNumber(e.target.value); setCost(formatMiles(val)); }} className="w-full rounded-lg px-3 py-2 bg-gray-900 text-white border border-gray-700 placeholder-gray-400" />
           </div>
           <div>
             <label className="block text-sm mb-1">Stock</label>

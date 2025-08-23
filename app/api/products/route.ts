@@ -40,11 +40,11 @@ export async function POST(req: NextRequest) {
     if (!name) {
       return NextResponse.json({ ok:false, error:'name_required' }, { status: 400 })
     }
-    const price = Number(data?.price ?? 0)
-    const cost  = Number(data?.cost ?? 0)
-    const stock = Number(data?.stock ?? 0)
+    const price = Number(String(data?.price ?? '0').replace(/[\.,\s]/g,''))
+    const cost  = Number(String(data?.cost ?? '0').replace(/[\.,\s]/g,''))
+    const stock = Number(String(data?.stock ?? '0').replace(/\D+/g,'') || '0')
     const categoryId = data?.categoryId ? Number(data.categoryId) : null
-    const isActive = data?.isActive === false ? false : true
+    const isActive = (data?.isActive ?? data?.active) === false ? false : true
     const description = data?.description ? String(data.description) : null
     const image = data?.image ? String(data.image) : null
 
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
         cost,
         stock,
         isActive,
+        active: isActive,
         categoryId,
         description,
         image,
