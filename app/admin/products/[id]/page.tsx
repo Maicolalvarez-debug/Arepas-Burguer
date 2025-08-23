@@ -2,7 +2,10 @@
 // app/admin/products/[id]/page.tsx
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'
+
+async function safeJson(res: Response) { try { return await res.json() } catch { return null } }
+;
 
 type Cat = { id: number; name: string };
 
@@ -73,7 +76,7 @@ export default function EditProductoPage({ params }: { params: { id: string } })
       });
       const json = await res.json();
       if (!res.ok || !json?.ok) throw new Error(json?.error || 'No se pudo actualizar');
-      router.push('/admin/products');
+      router.replace('/admin/products');
     } catch (err: any) {
       setMsg(err?.message || 'Error');
     } finally {
