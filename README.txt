@@ -1,18 +1,34 @@
-Arepas Burguer – Fixes FULL (export nombrado prisma + endpoints corregidos)
+AREPAS BURGUER v37 - Patches (Crear producto | Reordenar categorías | Solo modo oscuro)
+==================================================================================================
 
-Archivos incluidos:
-- src/lib/prisma.ts                 (export nombrado { prisma })
-- app/api/categories/route.ts       (import corregido + validación mínima)
-- app/api/modifiers/route.ts        (usa Number() para priceDelta/costDelta/stock + active por defecto)
-- app/api/products/route.ts         (POST con categoryId, usa Prisma.Decimal para price/cost)
-- app/api/products/[id]/route.ts    (GET por id)
+Instrucciones rápidas
+---------------------
+1) Copia y pega las carpetas de este zip dentro de la raíz de tu proyecto (donde está la carpeta "app/").
+   - Reemplaza los archivos cuando el sistema lo pida.
 
-Notas IMPORTANTES:
-- Si en tu schema Prisma `price` y `cost` NO son Decimal, cambia en products/route.ts a Number(...).
-- Si `categoryId` es Int, convierte: const categoryId = Number(body?.categoryId).
-- Asegúrate de tener alias `@/*` -> `src/*` en tsconfig.json. Si no, cambia los imports a rutas relativas.
+2) Archivos incluidos:
+   - app/admin/categories/CategoriesClient.tsx    (UI con subir/bajar y botón "Guardar orden" -> usa /api/categories/reorder)
+   - app/admin/layout.tsx                         (Layout Admin solo MODO OSCURO)
+   - app/layout.tsx                               (Layout raíz solo MODO OSCURO)
+   - app/admin/products/HeaderCreateButton.tsx    (Componente para mostrar el título + botón "Crear producto")
 
-Cómo usar:
-1) Haz backup o crea rama.
-2) Copia estos archivos en las rutas exactas y reemplaza los existentes.
-3) Despliega.
+3) Para el botón "Crear producto" en /admin/products:
+   - Abre app/admin/products/page.tsx y, en el JSX, inserta en la parte superior:
+
+       import HeaderCreateButton from './HeaderCreateButton'
+
+       // Dentro del JSX, antes del listado:
+       <HeaderCreateButton />
+
+   - Si prefieres reemplazar por completo tu page.tsx para que ya lo incluya, avísame y te genero
+     una versión completa alineada a tu fetch/render actual.
+
+4) Migraciones y endpoint
+   - Asegúrate de tener el campo "sortOrder" en Category y el endpoint POST /api/categories/reorder activo.
+   - Luego: npm run dev (o tu comando) y prueba el reordenamiento + guardado.
+
+5) Nota sobre Modo Oscuro
+   - Se eliminó la lógica de cambio de tema. Todo queda en oscuro por defecto en layouts.
+   - Si tenías componentes que dependían de "dark:" variantes, seguirán funcionando (el <body> ya está oscuro).
+
+Cualquier ajuste extra que necesites (por ejemplo, reemplazar page.tsx de productos) dime y te genero el archivo exacto.
