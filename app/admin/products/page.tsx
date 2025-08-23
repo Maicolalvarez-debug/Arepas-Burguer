@@ -1,6 +1,5 @@
 import React from 'react'
 import Link from 'next/link'
-import HeaderCreateButton from './HeaderCreateButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,13 +13,11 @@ type Product = {
 
 async function getProducts(): Promise<Product[]> {
   try {
-    // Intento hacer fetch al API interno. Si no existe /api/products, se regresará un arreglo vacío.
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ''}/api/products`, {
       cache: 'no-store',
     })
     if (!res.ok) return []
     const data = await res.json()
-    // Normalización defensiva: admite data.products o data directamente como lista
     const list = Array.isArray(data?.products) ? data.products : (Array.isArray(data) ? data : [])
     return list as Product[]
   } catch {
@@ -42,7 +39,16 @@ export default async function ProductsPage() {
 
   return (
     <div className="p-4 space-y-4">
-      <HeaderCreateButton />
+      {/* Header inline (sin import) */}
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Productos</h1>
+        <Link
+          href="/admin/products/new"
+          className="border rounded px-3 py-1 hover:bg-white/10 transition"
+        >
+          Crear producto
+        </Link>
+      </div>
 
       <div className="rounded-lg border border-white/10 overflow-hidden">
         <table className="w-full text-sm">
