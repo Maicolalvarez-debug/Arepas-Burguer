@@ -2,8 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-async function safeJson(res: Response) {
-  try { return await safeJson(res) } catch { return null }
+async function safeJson(res: Response) { try { return await res.json() } catch { return null } }
 }
 
 export default function NewCategoriaPage() {
